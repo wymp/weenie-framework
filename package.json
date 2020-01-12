@@ -1,0 +1,52 @@
+{
+  "name": "weenie-framework",
+  "version": "1.0.0",
+  "description": "An aggressively unopinionated Typescript microservices micro-framework",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "tsc": "npx tsc",
+    "test": "jest",
+    "prepublishOnly": "npx tsc"
+  },
+  "author": "Kael Shipman<kael.shipman@gmail.com>",
+  "license": "ISC",
+  "repository": "https://github.com/kael-shipman/weenie-framework.git",
+  "dependencies": {
+    "runtypes": "^4.0.3",
+    "simple-db-mysql": "^0.2.0",
+    "simple-logger-winston": "^0.2.0",
+    "ts-simple-interfaces": "^0.2.0",
+    "weenie-base": "^0.1.0",
+    "winston": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "@types/node": "^8.10.58",
+    "@types/sinon": "^4.3.3",
+    "husky": "^1.3.1",
+    "jest": "^24.9.0",
+    "prettier": "^1.16.0",
+    "pretty-quick": "^1.10.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.7.2"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "trailingComma": "es5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/tests"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
+  }
+}
+

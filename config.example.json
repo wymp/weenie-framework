@@ -1,0 +1,35 @@
+{
+  "envType": "dev",
+  "envName": "dev",
+  "serviceName": "my-service",
+  "maxJobWaitMs": 600000,
+  "initializationTimeoutMs": 10000,
+  "amqp": {
+    "protocol": "amqp",
+    "hostname": "localhost",
+    "port": 5672,
+    "username": "dev",
+    "password": "dev",
+    "locale": "en_US",
+    "vhost": "dev",
+    "heartbeat": 120
+  },
+  "db": {
+    "socketPath": "/var/run/mysqld/mysqld.sock",
+    "user": "dev",
+    "password": "dev",
+    "database": "test"
+  },
+  "ofapi": {
+    "key": "aaaabbbb-cccc-dddd-eeee-ffff00001111",
+    "secret": "aaaabbbb-cccc-dddd-eeee-ffff00002222",
+    "overrideUrl": null
+  },
+  "webService": {
+    "listeners": [ [ 3000, "localhost" ] ]
+  },
+  "logger": {
+    "logLevel": "debug",
+    "logFilePath": null
+  }
+}
