@@ -20,12 +20,12 @@
     "password": "dev",
     "database": "test"
   },
-  "ofapi": {
+  "api": {
     "key": "aaaabbbb-cccc-dddd-eeee-ffff00001111",
     "secret": "aaaabbbb-cccc-dddd-eeee-ffff00002222",
-    "overrideUrl": null
+    "baseUrl": "https://jsonplaceholder.typicode.com"
   },
-  "webService": {
+  "webservice": {
     "listeners": [ [ 3000, "localhost" ] ]
   },
   "logger": {
