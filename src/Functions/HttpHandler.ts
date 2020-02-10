@@ -7,67 +7,62 @@ import {
 } from "ts-simple-interfaces";
 import { WebServiceConfig } from "weenie-base";
 
-export function httpHandler<AppLocals = {[k: string]: unknown}>(locals: AppLocals) {
-  return (
-    d: {
-      config: { webservice: WebServiceConfig; },
-      logger: SimpleLoggerInterface,
-    }
-  ) => {
-    return {
-      http: new SimpleHttpServer<AppLocals>(locals, d.config.webservice, d.logger),
-    }
+export function httpHandler(d: {
+    config: { webservice: WebServiceConfig; },
+    logger: SimpleLoggerInterface,
+  }
+) {
+  return {
+    http: new SimpleHttpServer(d.config.webservice, d.logger),
   }
 }
 
-export class SimpleHttpServer<AppLocals = {[k: string]: unknown}> implements SimpleHttpRequestHandlerInterface<AppLocals> {
+export class SimpleHttpServer implements SimpleHttpRequestHandlerInterface {
   protected app: express.Express;
 
   public constructor(
-    public readonly locals: AppLocals,
     protected config: WebServiceConfig,
     protected log: SimpleLoggerInterface,
   ) {
     this.app = express();
-    this.app.locals = this.locals
   }
 
-  public use(middlewareOrErrorHandler: SimpleHttpServerMiddleware | SimpleHttpServerNextFunction): SimpleHttpRequestHandlerInterface<AppLocals> {
+  public use(middlewareOrErrorHandler: SimpleHttpServerMiddleware | SimpleHttpServerNextFunction): SimpleHttpRequestHandlerInterface {
     this.app.use(<any>middlewareOrErrorHandler);
     return this;
   }
 
-  public get<P, ResBody, Query>(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface<AppLocals> {
+  public get<P, ResBody, Query>(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface {
     this.app.get(route, <express.RequestHandler>handler);
     return this;
   }
 
-  public post(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface<AppLocals> {
+  public post(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface {
     this.app.post(route, <express.RequestHandler>handler);
     return this;
   }
 
-  public patch(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface<AppLocals> {
+  public patch(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface {
     this.app.patch(route, <express.RequestHandler>handler);
     return this;
   }
 
-  public put(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface<AppLocals> {
+  public put(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface {
     this.app.put(route, <express.RequestHandler>handler);
     return this;
   }
 
-  public delete(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface<AppLocals> {
+  public delete(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface {
     this.app.delete(route, <express.RequestHandler>handler);
     return this;
   }
 
-  public head(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface<AppLocals> {
+  public head(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface {
     this.app.head(route, <express.RequestHandler>handler);
     return this;
   }
 
-  public options(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface<AppLocals> {
+  public options(route: string | RegExp, handler: SimpleHttpServerMiddleware): SimpleHttpRequestHandlerInterface {
     this.app.options(route, <express.RequestHandler>handler);
     return this;
   }

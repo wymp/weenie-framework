@@ -1,3 +1,45 @@
+Weenie Framework
+============================================================================
+
+>
+> **WARNING:** This framework is _highly experimental_ and is under active alpha development. It's
+> not really meant to be used right now, although if you're curious and would like to try it out,
+> you're free to do so. Read on, and be sure to check out `src/example.ts` for example usage
+> (copied below for convenience).
+>
+
+The Weenie Framework is an experimental attempt at a microservices microframework for Typescript.
+
+It was born out of a frustration with giganto-frameworks like Nest and a desire to keep things
+small, light and composable, and with a special focus on empowering developers to build with it
+whatever and however they wish _without the framework getting in the way._ While it's use case is
+very different from that of Express, it is being designed and built with the same care not to take
+strong opinions on anything.
+
+To this end, Weenie was built like a cheap fake Christmas tree: It provides a central pole on which
+you can hang just about anything. The idea is that each "branch" that you hang on the central pole
+changes the definition of the pole for the branch that follows. It thus builds a dependency tree
+where later dependencies may depend on earlier dependencies, and all current dependencies are both
+known and strictly typed at each step.
+
+What you hang on that dependency tree and what you do with it is entirely up to you. The example
+in [`src/example.ts`](src/example.ts) is a decent look at what _I_ usually do with it and how.
+That is, it demonstrates the deliberate building of a "resource bag" (a dependency injection
+container), which I then use in event handlers and API request handlers to execute my core
+logic.
+
+And why go through all the trouble of doing it this way?
+
+Frankly, this makes sense to me, and it makes each individual component much more narrowly scoped
+and easier to test. Using this structure, I can mock out the entire tree for my test cases, and
+I can easily encapsulate my application logic in functions that themselves have a very narrow set
+of dependencies. And that allows me to focus my development and treat every component as it should
+be treated - as a small, isolated unit that does one thing well and uses very few other things to
+do it.
+
+Here's `src/example.ts`, copied for convenience:
+
+```ts
 import {
   // Base framework function
   Weenie,
@@ -31,13 +73,6 @@ import {
   SimpleHttpClientInterface,
   SimpleSqlDbInterface,
 } from "ts-simple-interfaces";
-
-
-
-
-
-
-
 
 
 /**
@@ -238,7 +273,7 @@ r.io.getAllDatabases().then((result) => {
     }
   });
 
-  // Start the app listening and we're done!
+  // Start the app listening
   r.http.listen();
 });
 
@@ -289,3 +324,31 @@ declare interface Company {
   catchPhrase: string;
   bs: string;
 }
+```
+
+This example is pretty trivial. However, it's very functional, and it demonstrates how easy it
+would be to modify the framework. Have a standard DBAL that you like, you can just write a
+function that hangs it on the tree configured the way you like it, and then any service that you
+create, all you have to do is `.and(myDbal)`. Want a global cache? `.and` it in. Want an
+exponential backer-offer? `.and` it in.
+
+One of the interesting parts about this is that you can abstract whole parts of the tree away into
+modules that represent you personal "way of doing things." For example, I could take the above and
+wrap it into a `MyService` function, pass that to Weenie as a starting point and just start
+`.and`ing from there.
+
+Best of all, you can release lightweight functions that configure things in a useful way (logger
+and config manager are ones that come mind as areas where people like to do things a variety of
+different ways) and other people can incorprate those into _their_ microservices by just `.and`ing
+them in.
+
+## Future Development
+
+There's a lot left to figure out from here. There's some basics, like adding a viable PubSub
+setup to the standard framework functions, but there are also some tougher questions, like whether
+and how to handle things like re-initializing dependencies on the fly when config changes (perhaps
+via a permissioned endpoint or something).
+
+For now, though, I'm letting my use-cases govern what gets built, and I invite any input from
+anyone else who may be interested in this.
+

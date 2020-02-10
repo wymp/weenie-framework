@@ -6,77 +6,77 @@ import {
 } from "ts-simple-interfaces";
 import { ApiConfig } from "weenie-base";
 
+
 /**
- * *WIP*
+ * **NOTE:** Because it's possible to have more than one simple-conformant API client in an app,
+ * it's hard to abstract instantiation of the API client completely away from the general app
+ * setup, even though it's fairly standard. Thus, it was necessary to define this "BaseApiDeps"
+ * type which is meant to be unified with a config dependency that defines the actual API clients
+ * that are being configured. 
  *
- * At the time of this writing, there is no good way to pull this off. We may have to resort to
- * depending on runtime type checking.
+ * For example, when instantiating an app, you would do something like this:
  *
- * Intended use:
+ * ....
+ * .and((d: BaseApiDeps & { config: { firstApi: ApiConfig; secondApi: ApiConfig; } }) => {
+ *   return {
+ *     firstApi: new ApiClient({ envType: d.config.envType, ...d.config.firstApi }, d.logger),
+ *     secondApi: new ApiClient({ envType: d.config.envType, ...d.config.secondApi }, d.logger),
+ *   }
+ * })
  *
- * ...
- * .and(api("api"))
- * .and(api("secondaryApi"))
- * ...
- *
- * This works for the first case, but not for the second, because the `configKey` pamater is typed
- * as the literal, "api", which then denies the incoming "secondaryApi" string. Using type
- * parameters seems like it should work, but you're not allowed to use dynamic types as key
- * references for an object.
+ * This defines the config keys that you're going to be using for your api clients, then uses those
+ * keys to create two distinct instances of the simple-conformant ApiClient class, one for each
+ * api.
  */
+export type BaseApiDeps = { config: { envType: string; }; logger: SimpleLoggerInterface; }
 
-export function api(
-  configKey: "api" = "api"
-): (d: { config: { envType: string; [configKey]: ApiConfig; }; logger: SimpleLoggerInterface; }) => {
-  [configKey]: SimpleHttpClientInterface
-} {
-  return (d: { config: { envType: string; [configKey]: ApiConfig; }; logger: SimpleLoggerInterface; }) => {
-    const config = d.config;
-    const apiConfig = config[configKey];
-    const rpn = new SimpleHttpClientRpn({}, d.logger);
-    const authString = `Basic ` +
-      new Buffer(`${apiConfig.key}:${apiConfig.secret}`).toString("base64");
+export class ApiClient implements SimpleHttpClientInterface {
+  protected rpn: SimpleHttpClientInterface;
+  protected authString: string;
 
-    return {
-      [configKey]: <SimpleHttpClientInterface>{
-        request: <D extends any>(
-          req: SimpleRpnRequestConfig
-        ): Promise<SimpleHttpClientResponseInterface<D>> => {
-          if (config.envType === "dev") {
-            req.rejectUnauthorized = false;
-          }
-          req.baseURL = apiConfig.baseUrl;
+  public constructor(
+    protected config: ({ envType: string; } & ApiConfig),
+    protected log: SimpleLoggerInterface
+  ) {
+    this.rpn = new SimpleHttpClientRpn({}, this.log);
+    this.authString = `Basic ` +
+      new Buffer(`${this.config.key}:${this.config.secret}`).toString("base64");
+  }
 
-          if (!req.method) {
-            req.method = "GET";
-          }
-
-          function has(header: string) {
-            return Object.keys(req.headers!).find(k => k.toLowerCase() === header) !== undefined;
-          }
-
-          if (!req.headers) {
-            req.headers = {};
-          }
-          if (!has("authorization")) {
-            req.headers["Authorization"] = authString;
-          } else {
-            req.headers["Authorization"] += `, ${authString}`;
-          }
-          if (!has("accept")) {
-            req.headers["Accept"] = "application/json";
-          }
-          if (req.method !== "GET" && !has("content-type")) {
-            req.headers["Content-Type"] = "application/json";
-          }
-
-          d.logger.info(`Making API call to ${req.method} ${req.baseURL}${req.url}`);
-          d.logger.debug(`Full request options:\n${JSON.stringify(req, null, 2)}`);
-
-          return rpn.request<D>(req);
-        }
-      }
+  public request <D extends any>(
+    req: SimpleRpnRequestConfig
+  ): Promise<SimpleHttpClientResponseInterface<D>> {
+    if (this.config.envType === "dev") {
+      req.rejectUnauthorized = false;
     }
-  };
-}
+    req.baseURL = this.config.baseUrl;
 
+    if (!req.method) {
+      req.method = "GET";
+    }
+
+    function has(header: string) {
+      return Object.keys(req.headers!).find(k => k.toLowerCase() === header) !== undefined;
+    }
+
+    if (!req.headers) {
+      req.headers = {};
+    }
+    if (!has("authorization")) {
+      req.headers["Authorization"] = this.authString;
+    } else {
+      req.headers["Authorization"] += `, ${this.authString}`;
+    }
+    if (!has("accept")) {
+      req.headers["Accept"] = "application/json";
+    }
+    if (req.method !== "GET" && !has("content-type")) {
+      req.headers["Content-Type"] = "application/json";
+    }
+
+    this.log.info(`Making API call to ${req.method} ${req.baseURL}${req.url}`);
+    this.log.debug(`Full request options:\n${JSON.stringify(req, null, 2)}`);
+
+    return this.rpn.request<D>(req);
+  }
+}

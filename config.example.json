@@ -20,16 +20,21 @@
     "password": "dev",
     "database": "test"
   },
-  "api": {
+  "firstApi": {
     "key": "aaaabbbb-cccc-dddd-eeee-ffff00001111",
     "secret": "aaaabbbb-cccc-dddd-eeee-ffff00002222",
+    "baseUrl": "https://jsonplaceholder.typicode.com"
+  },
+  "secondApi": {
+    "key": "bbbbaaaa-cccc-dddd-eeee-ffff00001111",
+    "secret": "bbbbaaaa-cccc-dddd-eeee-ffff00002222",
     "baseUrl": "https://jsonplaceholder.typicode.com"
   },
   "webservice": {
     "listeners": [ [ 3000, "localhost" ] ]
   },
   "logger": {
-    "logLevel": "debug",
+    "logLevel": "info",
     "logFilePath": null
   }
 }
