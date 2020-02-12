@@ -11,6 +11,7 @@ export function httpHandler(d: {
   // Log every incoming request
   http.use((req, res, next) => {
     d.logger.info(`${req.method} ${req.path}`);
+    next();
   });
 
   return { http };
