@@ -3,7 +3,7 @@
   "envName": "dev",
   "serviceName": "my-service",
   "maxJobWaitMs": 600000,
-  "initializationTimeoutMs": 10000,
+  "initializationTimeoutMs": 1000,
   "amqp": {
     "protocol": "amqp",
     "hostname": "localhost",
@@ -31,7 +31,7 @@
     "baseUrl": "https://jsonplaceholder.typicode.com"
   },
   "webservice": {
-    "listeners": [ [ 3000, "localhost" ] ]
+    "listeners": [[3000, "localhost"]]
   },
   "logger": {
     "logLevel": "info",
