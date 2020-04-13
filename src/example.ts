@@ -206,7 +206,7 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
       await d.myPromise;
 
       // This comes from the serviceManagement function up above
-      d.initialized();
+      d.svc.initialized(true);
 
       // Now return our sewn up bag of dependencies
       return {

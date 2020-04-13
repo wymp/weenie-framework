@@ -13,6 +13,7 @@
   "license": "ISC",
   "repository": "https://github.com/kael-shipman/weenie-framework.git",
   "dependencies": {
+    "@openfinance/http-errors": "^1.5.0",
     "@types/node": "^10.17.13",
     "runtypes": "^4.0.3",
     "simple-db-mysql": "^0.4.0",
