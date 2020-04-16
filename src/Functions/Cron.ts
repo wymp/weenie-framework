@@ -123,8 +123,7 @@ export class Cron {
       cron[3] !== "*" ||
       cron[4] !== "*" ||
       cron[5] !== "*" ||
-      (cron[2] !== "*" && cron[1] === "*") ||
-      cron[0] === "*" ||
+      (cron[2] !== "*" && (cron[1] === "*" || cron[0] === "*")) ||
       (cron[1] !== "*" && cron[0] === "*")
     ) {
       throw new E.NotImplemented(
@@ -159,5 +158,20 @@ export class Cron {
     }
 
     return ms;
+  }
+
+  /**
+   * Kill one or all jobs
+   */
+  public kill(name?: string): void {
+    if (name) {
+      if (typeof this.crontab[name] !== "undefined") {
+        clearTimeout(this.crontab[name].timer);
+      }
+    } else {
+      for (let n in this.crontab) {
+        clearTimeout(this.crontab[n].timer);
+      }
+    }
   }
 }
