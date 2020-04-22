@@ -1,13 +1,13 @@
 {
   "name": "weenie-framework",
-  "version": "0.1.4",
+  "version": "0.1.4-rc.1",
   "description": "An aggressively unopinionated Typescript microservices micro-framework",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
     "tsc": "npx tsc",
     "test": "jest",
-    "prepublishOnly": "npx tsc"
+    "prepublishOnly": "rm -Rf dist; npx tsc"
   },
   "author": "Kael Shipman<kael.shipman@gmail.com>",
   "license": "ISC",
@@ -17,14 +17,14 @@
     "@types/node": "^10.17.13",
     "@types/uuid": "^7.0.2",
     "runtypes": "^4.0.3",
-    "simple-db-mysql": "^0.4.0",
-    "simple-http-client-rpn": "^0.4.0",
-    "simple-http-server-express": "^0.4.0",
-    "simple-logger-winston": "^0.4.0",
-    "simple-pubsub-amqp": "^0.4.0",
-    "ts-simple-interfaces": "^0.4.0",
+    "simple-db-mysql": "^0.4.0-rc.1",
+    "simple-http-client-rpn": "^0.4.0-rc.1",
+    "simple-http-server-express": "^0.4.0-rc.1",
+    "simple-logger-winston": "^0.4.0-rc.1",
+    "simple-pubsub-amqp": "^0.4.0-rc.1",
+    "ts-simple-interfaces": "^0.4.0-rc.1",
     "uuid": "^7.0.3",
-    "weenie-base": "^0.1.3",
+    "weenie-base": "^0.1.3-rc.1",
     "winston": "^3.2.0"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "prettier": "^1.16.0",
     "pretty-quick": "^1.10.0",
     "ts-jest": "^24.0.2",
-    "ts-simple-interfaces-testing": "^0.4.0",
+    "ts-simple-interfaces-testing": "^0.4.0-rc.1",
     "typescript": "^3.7.2"
   },
   "prettier": {

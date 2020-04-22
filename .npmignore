@@ -5,3 +5,4 @@ tests
 tsconfig.*
 webpack.*
 logs
+config.local.json
