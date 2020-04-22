@@ -1,4 +1,4 @@
-import * as F from "../src/Functions";
+import * as M from "../src/Modules";
 import { SimpleLoggerInterface } from "ts-simple-interfaces";
 import { MockSimpleLogger } from "ts-simple-interfaces-testing";
 import * as fs from "fs";
@@ -14,7 +14,7 @@ describe("Logger", () => {
   });
 
   it("should log to our file", async () => {
-    const { logger: log } = F.logger({ logLevel: "debug", logFilePath });
+    const { logger: log } = M.logger({ logLevel: "debug", logFilePath });
 
     log.debug("DEBUG");
     log.info("INFO");
@@ -42,7 +42,7 @@ describe("Logger", () => {
   });
 
   it("should not log below the given log level", async () => {
-    const d = F.logger({ logLevel: "warning", logFilePath });
+    const d = M.logger({ logLevel: "warning", logFilePath });
     const log = d.logger;
 
     log.debug("DEBUG");
@@ -71,7 +71,7 @@ describe("Cron", () => {
     logger: MockSimpleLogger;
     svc?: { initTimeout: Promise<unknown>; initialized: (i?: true) => boolean };
   };
-  let c: F.Cron;
+  let c: M.Cron;
 
   beforeEach(() => {
     r = { logger: new MockSimpleLogger({ outputMessages: false }) };
@@ -97,7 +97,7 @@ describe("Cron", () => {
       }
 
       // Get a cron manager
-      const { cron } = await F.cron(r);
+      const { cron } = await M.cron(r);
       c = cron;
 
       c.register({
@@ -132,7 +132,7 @@ describe("Cron", () => {
       }
 
       // Get a cron manager
-      const { cron } = await F.cron(r);
+      const { cron } = await M.cron(r);
       c = cron;
 
       c.register({
@@ -149,6 +149,37 @@ describe("Cron", () => {
 
       await new Promise(res => setTimeout(() => res(), wait));
       expect(actual).toBe(expected);
+    });
+  });
+});
+
+describe("Backoff", () => {
+  describe("SimpleExponentialBackoff", () => {
+    const log = new MockSimpleLogger({ outputMessages: false });
+
+    it("should execute with exponential backoff on fail", async function() {
+      const backoff = new M.SimpleExponentialBackoff({ initialJobWaitMs: 20 });
+      let n = 0;
+      const results: Array<[number, number]> = [];
+
+      let last = Date.now();
+      await backoff.run(async () => {
+        last += n;
+        results.push([Date.now(), last]);
+        n = n === 0 ? 20 : n * 2;
+        return n > 320;
+      }, log);
+
+      expect(results.length).toBe(6);
+      let radius = 15;
+      for (let i = 0; i < results.length; i++) {
+        const [val, targ] = results[i];
+        const msg = `Failed at round ${i + 1}. Actual is ${val}, target is ${targ}, +/-${radius}`;
+        expect({ msg, val: val >= targ - radius && val <= targ + radius }).toEqual({
+          msg,
+          val: true,
+        });
+      }
     });
   });
 });

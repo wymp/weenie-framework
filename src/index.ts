@@ -1,2 +1,2 @@
 export * from "weenie-base";
-export * from "./Functions";
+export * from "./Modules";

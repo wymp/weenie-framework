@@ -20,12 +20,15 @@ import {
   databaseConfigValidator,
   webServiceConfigValidator,
   apiConfigValidator,
+  mqConnectionConfigValidator,
 
   // Functions that hang things on the tree
   logger,
   serviceManagement,
   mysql,
   httpHandler,
+  amqp,
+  WeeniePubSubAmqp,
 
   // Extra things for building the special api instantiator
   BaseApiDeps,
@@ -63,6 +66,7 @@ const exampleConfigValidator = rt.Intersect(
     webservice: webServiceConfigValidator,
     firstApi: apiConfigValidator,
     secondApi: apiConfigValidator,
+    amqp: mqConnectionConfigValidator,
   })
 );
 declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
@@ -120,6 +124,11 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
     .and(logger)
 
     /**
+     * Now we'll add a pubsub
+     */
+    .and(amqp)
+
+    /**
      * Next we do mysql. Nothing special here. Just a simple sql db instance specific to mysql.
      */
     .and(mysql)
@@ -154,6 +163,7 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
         firstApi: SimpleHttpClientInterface;
         secondApi: SimpleHttpClientInterface;
         sql: SimpleSqlDbInterface;
+        pubsub: WeeniePubSubAmqp;
       }) => {
         return {
           io: {
@@ -214,67 +224,94 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
         log: d.logger,
         io: d.io,
         http: d.http,
+        pubsub: d.pubsub,
       };
     });
 
   /**
+   *
+   *
+   *
+   *
+   *
+   *
    * Now we can use our dependencies.
    *
    * In this case, we're just exercising them a little bit for the purposes of example. We're logging
    * stuff, exploring config values, getting information from the database, setting up an endpoint
-   * for getting some info, and getting info from our APIs.
+   * for getting some info, subscribing to MQ messages, and getting info from our APIs.
+   *
+   *
+   *
+   *
+   *
+   *
    */
 
+  // First list available databases (just for fun)
   r.log.notice(`App started in environment '${r.config.envName}'`);
-  r.io.getAllDatabases().then(result => {
-    r.log.notice(`Available databases:`);
-    for (let row of result.rows) {
-      r.log.notice(`* ${row.Database}`);
-    }
+  const dbsQuery = await r.io.getAllDatabases();
 
-    // Set up our webservice to handle incoming requests, and add middleware to log request info
-    r.http.use((req, res, next) => {
-      r.log.info(`Received request: ${req.path}`);
-      next();
-    });
-    r.http.get("/info", async (req, res, next) => {
-      try {
-        // Pick a random to-do and get info about it.
-        const todoId = Math.round(Math.random() * 100);
+  r.log.notice(`Available databases:`);
+  for (let row of dbsQuery.rows) {
+    r.log.notice(`* ${row.Database}`);
+  }
 
-        // Get todo
-        r.log.info(`Getting todo id ${todoId} from API`);
-        const todo = await r.io.getTodo(todoId);
-        r.log.debug(`Got response from API: ${JSON.stringify(todo)}`);
+  // Now, subscribe to all events on the 'data-events' channel
+  r.pubsub.subscribe(
+    { "data-events": ["*.*.*"] },
+    (msg, log) => {
+      // The message content has already been converted to object format for us, but remains type
+      // unknown. The first thing we always need to do is validate the type, since this is a runtime
+      // boundary. In this case, we're feeling lazy, so just dumping the content.
+      log.notice(`Got message with id ${msg.id}: ` + JSON.stringify(msg));
+      return Promise.resolve(true);
+    },
+    { queue: { name: r.config.serviceName } }
+  );
 
-        r.log.info(`Getting user id ${todo.userId} from API`);
-        const user = await r.io.getUser(todo.userId);
-        r.log.debug(`Got response from API: ${JSON.stringify(user)}`);
-
-        res.send({
-          timestamp: Date.now(),
-          todo,
-          user,
-          meta: {
-            nextTodo: todo.id * 1 + 1,
-            prevTodo: todo.id * 1 - 1,
-          },
-        });
-      } catch (e) {
-        res.status(500).send({
-          errors: [
-            {
-              title: "Sorry, we screwed up",
-              detail: e.message,
-            },
-          ],
-        });
-      }
-    });
-
-    // Start the app listening and we're done!
-    r.http.listen();
+  // Set up our webservice to handle incoming requests, and add middleware to log request info
+  r.http.use((req, res, next) => {
+    r.log.info(`Received request: ${req.path}`);
+    next();
   });
+  r.http.get("/info", async (req, res, next) => {
+    try {
+      // Pick a random to-do and get info about it.
+      const todoId = Math.round(Math.random() * 100);
+
+      // Get todo
+      r.log.info(`Getting todo id ${todoId} from API`);
+      const todo = await r.io.getTodo(todoId);
+      r.log.debug(`Got response from API: ${JSON.stringify(todo)}`);
+
+      r.log.info(`Getting user id ${todo.userId} from API`);
+      const user = await r.io.getUser(todo.userId);
+      r.log.debug(`Got response from API: ${JSON.stringify(user)}`);
+
+      res.send({
+        timestamp: Date.now(),
+        todo,
+        user,
+        meta: {
+          nextTodo: todo.id * 1 + 1,
+          prevTodo: todo.id * 1 - 1,
+        },
+      });
+    } catch (e) {
+      res.status(500).send({
+        errors: [
+          {
+            title: "Sorry, we screwed up",
+            detail: e.message,
+          },
+        ],
+      });
+    }
+  });
+
+  // Start the app listening and we're done!
+  r.http.listen();
 })() // End async "init" function
   .catch(e => {
     console.error(e);
@@ -282,7 +319,23 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
   });
 
 /**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  * Unimportant type definitions for the the example
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 declare interface Todo {
   userId: number;

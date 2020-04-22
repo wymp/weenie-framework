@@ -1,7 +1,6 @@
 import * as E from "@openfinance/http-errors";
-import { SimpleLoggerInterface } from "ts-simple-interfaces";
+import { SimpleLoggerInterface, TaggedLogger } from "ts-simple-interfaces";
 import { Cronjob } from "weenie-base";
-import { TaggedLogger } from "../TaggedLogger";
 
 /**
  *
