@@ -1,4 +1,4 @@
-import { SimpleLoggerInterface } from "ts-simple-interfaces";
+import { SimpleLoggerInterface, SimplePubSubInterface } from "ts-simple-interfaces";
 import {
   SimpleAmqpConfig,
   AbstractPubSubAmqp,
@@ -22,12 +22,9 @@ export const amqp = (r: {
  * Need to create an adapter class to change the signature of subscribe and publish for our specific
  * philosophy.
  */
-export class WeeniePubSubAmqp extends AbstractPubSubAmqp<
-  WeenieAmqpMessage,
-  unknown,
-  SubscriptionOptions,
-  PublishOptions
-> {
+export class WeeniePubSubAmqp extends AbstractPubSubAmqp
+  implements
+    SimplePubSubInterface<WeenieAmqpMessage, unknown, SubscriptionOptions, PublishOptions> {
   public subscribe(
     routes: { [exchange: string]: Array<string> },
     handler: (msg: WeenieAmqpMessage, log: SimpleLoggerInterface) => Promise<boolean>,

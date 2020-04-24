@@ -15,7 +15,7 @@ import { Cronjob } from "weenie-base";
  *
  */
 
-export const cron = async (r: {
+export const cron = (r: {
   logger: SimpleLoggerInterface;
   svc?: {
     initTimeout: Promise<unknown>;
@@ -62,7 +62,7 @@ export class Cron {
   /**
    * Registers cron jobs in the crontab and initializes them if the service is ready
    */
-  public async register(jobOrJobs: Cronjob | Array<Cronjob>): Promise<void> {
+  public register(jobOrJobs: Cronjob | Array<Cronjob>): void {
     const jobs = Array.isArray(jobOrJobs) ? jobOrJobs : [jobOrJobs];
 
     // Add jobs to crontab

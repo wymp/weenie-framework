@@ -15,7 +15,7 @@ import * as uuid from "uuid";
  */
 
 export const backoff = (type: "exponential") => {
-  return (r: { config: JobManagerConfig }) => {
+  return (r: { config: JobManagerConfig }): { backoff: Backoff } => {
     return { backoff: new SimpleExponentialBackoff(r.config) };
   };
 };
