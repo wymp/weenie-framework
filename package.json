@@ -1,6 +1,6 @@
 {
   "name": "weenie-framework",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "An aggressively unopinionated Typescript microservices micro-framework",
   "main": "dist/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "simple-pubsub-amqp": "^0.4.0",
     "ts-simple-interfaces": "^0.4.0",
     "uuid": "^7.0.3",
-    "weenie-base": "^0.1.3",
+    "weenie-base": "^0.2.0",
     "winston": "^3.2.0"
   },
   "devDependencies": {
