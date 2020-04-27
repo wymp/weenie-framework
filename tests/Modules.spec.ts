@@ -81,42 +81,7 @@ describe("Cron", () => {
   });
 
   [false, true].map(svc => {
-    test(`should successfully run interval cronjobs ${
-      svc ? `with` : `without`
-    } svc dependency`, async () => {
-      const wait: number = 325;
-      let actual: number = 0;
-      let expected: number = 6;
-
-      if (svc) {
-        expected = 2;
-        r.svc = {
-          initTimeout: new Promise(r => setTimeout(() => r(), 200)),
-          initialized: (i?: true) => !!i,
-        };
-      }
-
-      // Get a cron manager
-      const { cron } = await M.cron(r);
-      c = cron;
-
-      c.register({
-        name: "Test Job",
-        spec: {
-          t: "interval",
-          ms: 50,
-        },
-        handler: (log: SimpleLoggerInterface) => {
-          actual++;
-          return Promise.resolve(true);
-        },
-      });
-
-      await new Promise(res => setTimeout(() => res(), wait));
-      expect(actual).toBe(expected);
-    });
-
-    test(`should successfully run simple clock cronjobs ${
+    test(`should successfully run clock cronjobs ${
       svc ? `with` : `without`
     } svc dependency`, async () => {
       const wait: number = 3025;
@@ -137,10 +102,7 @@ describe("Cron", () => {
 
       c.register({
         name: "Test Job",
-        spec: {
-          t: "clock" as "clock",
-          clock: ["*", "*", "*", "*", "*", "*"],
-        },
+        spec: "* * * * * *",
         handler: (log: SimpleLoggerInterface) => {
           actual++;
           return Promise.resolve(true);
