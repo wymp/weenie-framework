@@ -1,17 +1,12 @@
-# Weenie Framework
+Weenie Framework
+=================================================================================
 
-> **WARNING:** This framework is _highly experimental_ and is under active alpha development. It's
-> not really meant to be used right now, although if you're curious and would like to try it out,
-> you're free to do so. Read on, and be sure to check out `src/example.ts` for example usage
-> (copied below for convenience).
-
-The Weenie Framework is an experimental attempt at a microservices microframework for Typescript.
+The Weenie Framework is a strongly typed dependency injection framework for Typescript.
 
 It was born out of a frustration with giganto-frameworks like Nest and a desire to keep things
 small, light and composable, and with a special focus on empowering developers to build with it
-whatever and however they wish _without the framework getting in the way._ While its use case is
-very different from that of Express (or rather, it is a _superset_ of Express functionality), it
-is being designed and built with the same care not to take strong opinions on anything.
+whatever and however they wish _without the framework getting in the way._ It is designed to be
+highly unopinionated.
 
 To this end, Weenie was built like a cheap fake Christmas tree: It provides a central pole on which
 you can hang just about anything. The idea is that each "branch" that you hang on the central pole
