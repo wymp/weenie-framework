@@ -1,6 +1,6 @@
 {
   "name": "weenie-framework",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "description": "An aggressively unopinionated Typescript microservices micro-framework",
   "main": "dist/index.js",
   "scripts": {
@@ -15,19 +15,19 @@
   "dependencies": {
     "@openfinance/http-errors": "^1.5.1",
     "@types/cron": "^1.7.2",
-    "@types/node": "^10.17.26",
+    "@types/node": "^10.17.28",
     "@types/uuid": "^7.0.4",
     "cron": "^1.8.2",
-    "runtypes": "^4.0.3",
-    "simple-db-mysql": "^0.4.0",
+    "runtypes": "^4.3.0",
+    "simple-db-mysql": "^0.4.1",
     "simple-http-client-rpn": "^0.4.0",
     "simple-http-server-express": "^0.4.0",
     "simple-logger-winston": "^0.4.0",
     "simple-pubsub-amqp": "^0.4.1",
-    "ts-simple-interfaces": "^0.4.0",
+    "ts-simple-interfaces": "^0.4.2",
     "uuid": "^7.0.3",
-    "weenie-base": "^0.2.0",
-    "winston": "^3.2.0"
+    "weenie-base": "^0.3.1",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
@@ -38,7 +38,7 @@
     "pretty-quick": "^1.10.0",
     "ts-jest": "^24.0.2",
     "ts-simple-interfaces-testing": "^0.4.0",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.7"
   },
   "prettier": {
     "printWidth": 100,
