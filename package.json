@@ -1,32 +1,32 @@
 {
   "name": "weenie-framework",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "An aggressively unopinionated Typescript microservices micro-framework",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
     "tsc": "npx tsc",
     "test": "jest",
-    "prepublishOnly": "rm -Rf dist; npx tsc"
+    "prepublishOnly": "rm -Rf dist; tsc"
   },
   "author": "Kael Shipman<kael.shipman@gmail.com>",
   "license": "ISC",
   "repository": "https://github.com/kael-shipman/weenie-framework.git",
   "dependencies": {
-    "@openfinance/http-errors": "^1.5.1",
+    "@openfinanceio/http-errors": "^1.5.2",
     "@types/cron": "^1.7.2",
     "@types/node": "^10.17.28",
     "@types/uuid": "^7.0.4",
     "cron": "^1.8.2",
     "runtypes": "^4.3.0",
-    "simple-db-mysql": "^0.4.1",
-    "simple-http-client-rpn": "^0.4.0",
-    "simple-http-server-express": "^0.4.0",
-    "simple-logger-winston": "^0.4.0",
-    "simple-pubsub-amqp": "^0.4.1",
-    "ts-simple-interfaces": "^0.4.2",
+    "simple-db-mysql": "^0.4.2",
+    "simple-http-client-rpn": "^0.4.1",
+    "simple-http-server-express": "^0.4.1",
+    "simple-logger-winston": "^0.4.1",
+    "simple-pubsub-amqp": "^0.4.2",
+    "ts-simple-interfaces": "^0.4.4",
     "uuid": "^7.0.3",
-    "weenie-base": "^0.3.1",
+    "weenie-base": "^0.3.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -37,8 +37,8 @@
     "prettier": "^1.16.0",
     "pretty-quick": "^1.10.0",
     "ts-jest": "^24.0.2",
-    "ts-simple-interfaces-testing": "^0.4.0",
-    "typescript": "^3.9.7"
+    "ts-simple-interfaces-testing": "^0.4.1",
+    "typescript": "^3.9.7 || ^4.0.0"
   },
   "prettier": {
     "printWidth": 100,
