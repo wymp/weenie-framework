@@ -1,13 +1,13 @@
 {
   "name": "weenie-framework",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "An aggressively unopinionated Typescript microservices micro-framework",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
     "tsc": "npx tsc",
     "test": "jest",
-    "prepublishOnly": "rm -Rf dist; tsc"
+    "prepublishOnly": "rm -Rf dist; npx tsc"
   },
   "author": "Kael Shipman<kael.shipman@gmail.com>",
   "license": "ISC",

@@ -11,6 +11,11 @@ export interface CronjobInterface {
   handler: (log: SimpleLoggerInterface) => Promise<boolean>;
 }
 
+export interface CronInterface {
+  register(jobOrJobs: CronjobInterface | Array<CronjobInterface>): void;
+  kill(name?: string): void;
+}
+
 /**
  *
  *
@@ -34,6 +39,8 @@ export const cron = (r: {
   const waiter = r.svc ? r.svc.initTimeout : Promise.resolve(true);
   return { cron: new Cron(r.logger, waiter) };
 };
+
+export const mockCron = () => ({ cron: new MockCron() });
 
 /**
  * NOTE: Cronjobs use setTimeout instead of setInterval because we don't want
@@ -132,5 +139,24 @@ export class Cron {
         }
       }
     }
+  }
+}
+
+export class MockCron implements CronInterface {
+  private _jobs: Array<CronjobInterface & { killed: boolean }> = [];
+
+  public get jobs(): Array<CronjobInterface & { readonly killed: boolean }> {
+    return this._jobs;
+  }
+
+  public register(jobOrJobs: CronjobInterface | Array<CronjobInterface>): void {
+    if (!Array.isArray(jobOrJobs)) {
+      this._jobs.push({ ...jobOrJobs, killed: false });
+    } else {
+      this._jobs = this._jobs.concat(jobOrJobs.map(j => ({ ...j, killed: false })));
+    }
+  }
+  public kill(name?: string): void {
+    (name ? this._jobs.filter(j => j.name === name) : this._jobs).map(j => (j.killed = true));
   }
 }

@@ -66,51 +66,85 @@ describe("Logger", () => {
   });
 });
 
-describe("Cron", () => {
-  let r: {
-    logger: MockSimpleLogger;
-    svc?: { initTimeout: Promise<unknown>; initialized: (i?: true) => boolean };
-  };
-  let c: M.Cron;
+describe("Cron Module", () => {
+  describe("Cron Class", () => {
+    let r: {
+      logger: MockSimpleLogger;
+      svc?: { initTimeout: Promise<unknown>; initialized: (i?: true) => boolean };
+    };
+    let c: M.Cron;
 
-  beforeEach(() => {
-    r = { logger: new MockSimpleLogger({ outputMessages: false }) };
+    beforeEach(() => {
+      r = { logger: new MockSimpleLogger({ outputMessages: false }) };
+    });
+    afterEach(() => {
+      c.kill();
+    });
+
+    [false, true].map(svc => {
+      test(`should successfully run clock cronjobs ${
+        svc ? `with` : `without`
+      } svc dependency`, async () => {
+        const wait: number = 3025;
+        let actual: number = 0;
+        let expected: number = 3;
+
+        if (svc) {
+          expected = 2;
+          r.svc = {
+            initTimeout: new Promise(r => setTimeout(() => r(), 1000)),
+            initialized: (i?: true) => !!i,
+          };
+        }
+
+        // Get a cron manager
+        const { cron } = await M.cron(r);
+        c = cron;
+
+        c.register({
+          name: "Test Job",
+          spec: "* * * * * *",
+          handler: (log: SimpleLoggerInterface) => {
+            actual++;
+            return Promise.resolve(true);
+          },
+        });
+
+        await new Promise(res => setTimeout(() => res(), wait));
+        expect(actual).toBe(expected);
+      });
+    });
   });
-  afterEach(() => {
-    c.kill();
-  });
 
-  [false, true].map(svc => {
-    test(`should successfully run clock cronjobs ${
-      svc ? `with` : `without`
-    } svc dependency`, async () => {
-      const wait: number = 3025;
-      let actual: number = 0;
-      let expected: number = 3;
-
-      if (svc) {
-        expected = 2;
-        r.svc = {
-          initTimeout: new Promise(r => setTimeout(() => r(), 1000)),
-          initialized: (i?: true) => !!i,
-        };
-      }
-
-      // Get a cron manager
-      const { cron } = await M.cron(r);
-      c = cron;
-
-      c.register({
-        name: "Test Job",
+  describe("MockCron Class", () => {
+    test("should keep records on registered cronjobs without executing them", () => {
+      let called: boolean = false;
+      const job = {
+        name: "testcron",
         spec: "* * * * * *",
         handler: (log: SimpleLoggerInterface) => {
-          actual++;
+          called = true;
           return Promise.resolve(true);
         },
-      });
+      };
 
-      await new Promise(res => setTimeout(() => res(), wait));
-      expect(actual).toBe(expected);
+      // Register a job and make sure it doesn't get called
+      const c = new M.MockCron();
+      c.register(job);
+      expect(called).toBe(false);
+      expect(c.jobs).toHaveLength(1);
+      expect(c.jobs[0]!.killed).toBe(false);
+
+      // Typescript: Make sure we can't inappropriately kill a job (uncomment this)
+      //c.jobs[0]!.killed = true;
+
+      // Make sure we can target our killing
+      c.kill("not-a-job");
+      expect(c.jobs[0]!.killed).toBe(false);
+
+      // Kill all jobs and make sure they get marked as killed
+      c.kill();
+      expect(c.jobs[0]!.killed).toBe(true);
     });
   });
 });
