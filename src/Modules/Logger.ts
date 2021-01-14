@@ -1,4 +1,4 @@
-import { LoggerConfig } from "weenie-base";
+import { LoggerConfig } from "@wymp/weenie-base";
 import { SimpleLoggerInterface } from "ts-simple-interfaces";
 import { SimpleLoggerWinston } from "simple-logger-winston";
 import * as winston from "winston";

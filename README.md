@@ -1,9 +1,6 @@
 Weenie Framework
 =================================================================================
 
-**NOTE: As of version 0.4.0, weenie is now a project of [Wymp](https://github.com/wymp). Please use
-@wymp/weenie-framework for future versions of this package.**
-
 The Weenie Framework is a strongly typed dependency injection framework for Typescript.
 
 It was born out of a frustration with giganto-frameworks like Nest and a desire to keep things
@@ -330,3 +327,4 @@ via a permissioned endpoint or something).
 
 For now, though, I'm letting my use-cases govern what gets built, and I invite any input from
 anyone else who may be interested in this.
+

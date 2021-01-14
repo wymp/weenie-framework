@@ -13,7 +13,7 @@ import {
   // Base framework function
   Weenie,
 
-  // Config stuff (all of these actually come from the `weenie-base` package and are "standard"
+  // Config stuff (all of these actually come from the `@wymp/weenie-base` package and are "standard"
   // approaches to configuring these services)
   configFromFiles,
   baseConfigValidator,
@@ -51,7 +51,7 @@ import {
 /**
  * Create final config definition
  *
- * Here, we're using the "base" config from weenie-base (which includes things like config for
+ * Here, we're using the "base" config from @wymp/weenie-base (which includes things like config for
  * an exponential backoff system, an initialization system, a logger, and environment awareness)
  * and we're adding config for a database, webservice provider, and two arbitrary API clients.
  *
@@ -113,7 +113,7 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
      */
     .and(() => {
       return {
-        myPromise: new Promise((res, rej) => setTimeout(() => res(), 2000)),
+        myPromise: new Promise<void>((res, rej) => setTimeout(() => res(), 2000)),
       };
     })
 

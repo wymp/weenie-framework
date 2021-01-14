@@ -1,4 +1,4 @@
-import { DatabaseConfig } from "weenie-base";
+import { DatabaseConfig } from "@wymp/weenie-base";
 import { SimpleSqlDbInterface } from "ts-simple-interfaces";
 import { SimpleDbMysql } from "simple-db-mysql";
 
@@ -16,5 +16,12 @@ export function mysql(deps: FullConfig | PartialConfig | DatabaseConfig): SqlDep
       : { config: { db: deps } })
   );
 
-  return { sql: new SimpleDbMysql(d.config.db) };
+  return {
+    sql: new SimpleDbMysql({
+      ...d.config.db,
+      host: d.config.db.host || undefined,
+      port: d.config.db.port || undefined,
+      socketPath: d.config.db.socketPath || undefined,
+    }),
+  };
 }

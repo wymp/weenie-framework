@@ -1,5 +1,5 @@
 import { SimpleLoggerInterface } from "ts-simple-interfaces";
-import { JobManagerConfig } from "weenie-base";
+import { JobManagerConfig } from "@wymp/weenie-base";
 import * as uuid from "uuid";
 
 /**

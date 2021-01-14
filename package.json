@@ -1,8 +1,9 @@
 {
-  "name": "weenie-framework",
-  "version": "0.3.4",
-  "description": "ABANDONED - USE @wymp/weenie-framework instead. This is the main package for Weenie, an unopinionated, fluent, traditional Typescript dependency injector.",
+  "name": "@wymp/weenie-framework",
+  "version": "0.4.0",
+  "description": "This is the main package for Weenie, an unopinionated, fluent, traditional Typescript dependency injector.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "npx tsc",
     "tsc": "npx tsc",
@@ -11,22 +12,22 @@
   },
   "author": "Kael Shipman<kael.shipman@gmail.com>",
   "license": "ISC",
-  "repository": "https://github.com/kael-shipman/weenie-framework.git",
+  "repository": "https://github.com/wymp/weenie-framework.git",
   "dependencies": {
-    "@openfinanceio/http-errors": "^1.5.2",
+    "@openfinanceio/http-errors": "^1.6.0",
     "@types/cron": "^1.7.2",
-    "@types/node": "^10.17.28",
+    "@types/node": "^10.17.50",
     "@types/uuid": "^7.0.4",
+    "@wymp/weenie-base": "^0.4.0",
     "cron": "^1.8.2",
     "runtypes": "^4.3.0",
-    "simple-db-mysql": "^0.4.2",
+    "simple-db-mysql": "^0.4.3",
     "simple-http-client-rpn": "^0.4.1",
     "simple-http-server-express": "^0.4.1",
     "simple-logger-winston": "^0.4.1",
     "simple-pubsub-amqp": "^0.4.2",
     "ts-simple-interfaces": "^0.4.4",
     "uuid": "^7.0.3",
-    "weenie-base": "^0.3.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -37,8 +38,8 @@
     "prettier": "^1.16.0",
     "pretty-quick": "^1.10.0",
     "ts-jest": "^24.0.2",
-    "ts-simple-interfaces-testing": "^0.4.1",
-    "typescript": "^3.9.7 || ^4.0.0"
+    "ts-simple-interfaces-testing": "^0.4.2",
+    "typescript": "^4.1.3"
   },
   "prettier": {
     "printWidth": 100,

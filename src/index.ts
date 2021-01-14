@@ -1,2 +1,2 @@
-export * from "weenie-base";
+export * from "@wymp/weenie-base";
 export * from "./Modules";
