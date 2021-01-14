@@ -1,7 +1,7 @@
 {
   "name": "weenie-framework",
-  "version": "0.3.3",
-  "description": "An aggressively unopinionated Typescript microservices micro-framework",
+  "version": "0.3.4",
+  "description": "ABANDONED - USE @wymp/weenie-framework instead. This is the main package for Weenie, an unopinionated, fluent, traditional Typescript dependency injector.",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
