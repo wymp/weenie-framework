@@ -303,7 +303,7 @@ declare interface Company {
 ---
 
 This example is pretty trivial. However, it's very functional, and it demonstrates how easy it
-would be to modify the framework. Have a standard DBAL that you like, you can just write a
+would be to modify the framework. Have a standard DBAL that you like? You can just write a
 function that hangs it on the tree configured the way you like it, and then for any service that
 you create, all you have to do is `.and(myDbal)`. Want a global cache? `.and` it in. Want an
 exponential backer-offer? `.and` it in.
@@ -320,11 +320,7 @@ them in.
 
 ## Future Development
 
-There's a lot left to figure out from here. There are some basics, like adding a viable PubSub
-setup to the standard framework functions, but there are also some tougher questions, like whether
-and how to handle things like re-initializing dependencies on the fly when config changes (perhaps
-via a permissioned endpoint or something).
-
-For now, though, I'm letting my use-cases govern what gets built, and I invite any input from
-anyone else who may be interested in this.
+For now, this framework provides just about all the functionality that I want from it. I don't have
+any immediately plans for additional development, although I'm certainly open to adding more and/or
+changing things. Feel free to submit an issue for any suggestions.
 
