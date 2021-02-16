@@ -1,5 +1,5 @@
 import { SimpleLoggerInterface } from "@wymp/ts-simple-interfaces";
-import { WebServiceConfig } from "@wymp/weenie-base";
+import { WebServiceConfig } from "../Types";
 import { SimpleHttpServerExpress } from "@wymp/simple-http-server-express";
 
 export function httpHandler(d: {

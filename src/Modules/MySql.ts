@@ -1,4 +1,4 @@
-import { DatabaseConfig } from "@wymp/weenie-base";
+import { DatabaseConfig } from "../Types";
 import { SimpleSqlDbInterface } from "@wymp/ts-simple-interfaces";
 import { SimpleDbMysql } from "@wymp/simple-db-mysql";
 

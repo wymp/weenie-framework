@@ -4,7 +4,7 @@ import {
   SimpleHttpClientResponseInterface,
   SimpleLoggerInterface,
 } from "@wymp/ts-simple-interfaces";
-import { ApiConfig } from "@wymp/weenie-base";
+import { ApiConfig } from "../Types";
 
 /**
  * **NOTE:** Because it's possible to have more than one simple-conformant API client in an app,
