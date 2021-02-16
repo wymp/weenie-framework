@@ -1,6 +1,6 @@
 import * as M from "../src/Modules";
-import { SimpleLoggerInterface } from "ts-simple-interfaces";
-import { MockSimpleLogger } from "ts-simple-interfaces-testing";
+import { SimpleLoggerInterface } from "@wymp/ts-simple-interfaces";
+import { MockSimpleLogger } from "@wymp/ts-simple-interfaces-testing";
 import * as fs from "fs";
 
 describe("Logger", () => {
@@ -27,7 +27,7 @@ describe("Logger", () => {
 
     const dateRegexp = "20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
 
-    await new Promise((res, rej) => setTimeout(() => res(), 500));
+    await new Promise<void>((res, rej) => setTimeout(() => res(), 500));
 
     const contents = fs.readFileSync(logFilePath, "utf8").split("\n");
     expect(contents.length).toBe(9);
@@ -54,7 +54,7 @@ describe("Logger", () => {
     log.critical("CRITICAL");
     log.emergency("EMERGENCY");
 
-    await new Promise((res, rej) => setTimeout(() => res(), 500));
+    await new Promise<void>((res, rej) => setTimeout(() => res(), 500));
 
     const contents = fs.readFileSync(logFilePath, "utf8").split("\n");
     expect(contents.length).toBe(6);
@@ -92,7 +92,7 @@ describe("Cron Module", () => {
         if (svc) {
           expected = 2;
           r.svc = {
-            initTimeout: new Promise(r => setTimeout(() => r(), 1000)),
+            initTimeout: new Promise<void>(r => setTimeout(() => r(), 1000)),
             initialized: (i?: true) => !!i,
           };
         }
@@ -110,7 +110,7 @@ describe("Cron Module", () => {
           },
         });
 
-        await new Promise(res => setTimeout(() => res(), wait));
+        await new Promise<void>(res => setTimeout(() => res(), wait));
         expect(actual).toBe(expected);
       });
     });

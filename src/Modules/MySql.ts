@@ -1,6 +1,6 @@
 import { DatabaseConfig } from "@wymp/weenie-base";
-import { SimpleSqlDbInterface } from "ts-simple-interfaces";
-import { SimpleDbMysql } from "simple-db-mysql";
+import { SimpleSqlDbInterface } from "@wymp/ts-simple-interfaces";
+import { SimpleDbMysql } from "@wymp/simple-db-mysql";
 
 type PartialConfig = { db: DatabaseConfig };
 type FullConfig = { config: PartialConfig };

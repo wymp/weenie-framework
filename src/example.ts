@@ -46,7 +46,7 @@ import {
   SimpleLoggerInterface,
   SimpleHttpClientInterface,
   SimpleSqlDbInterface,
-} from "ts-simple-interfaces";
+} from "@wymp/ts-simple-interfaces";
 
 /**
  * Create final config definition

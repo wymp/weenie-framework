@@ -1,4 +1,4 @@
-import { SimpleLoggerInterface, TaggedLogger } from "ts-simple-interfaces";
+import { SimpleLoggerInterface, TaggedLogger } from "@wymp/ts-simple-interfaces";
 import { CronJob as CronProvider } from "cron";
 
 /**

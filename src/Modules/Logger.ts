@@ -1,6 +1,6 @@
 import { LoggerConfig } from "@wymp/weenie-base";
-import { SimpleLoggerInterface } from "ts-simple-interfaces";
-import { SimpleLoggerWinston } from "simple-logger-winston";
+import { SimpleLoggerInterface } from "@wymp/ts-simple-interfaces";
+import { SimpleLoggerWinston } from "@wymp/simple-logger-winston";
 import * as winston from "winston";
 
 type PartialConfig = { logger: LoggerConfig };

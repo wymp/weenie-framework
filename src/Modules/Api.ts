@@ -1,9 +1,9 @@
-import { SimpleHttpClientRpn, SimpleRpnRequestConfig } from "simple-http-client-rpn";
+import { SimpleHttpClientRpn, SimpleRpnRequestConfig } from "@wymp/simple-http-client-rpn";
 import {
   SimpleHttpClientInterface,
   SimpleHttpClientResponseInterface,
   SimpleLoggerInterface,
-} from "ts-simple-interfaces";
+} from "@wymp/ts-simple-interfaces";
 import { ApiConfig } from "@wymp/weenie-base";
 
 /**
@@ -37,14 +37,16 @@ export class ApiClient implements SimpleHttpClientInterface {
     protected config: { envType: string } & ApiConfig,
     protected log: SimpleLoggerInterface
   ) {
-    this.rpn = new SimpleHttpClientRpn({}, this.log);
+    this.rpn = new SimpleHttpClientRpn({});
     this.authString =
-      `Basic ` + new Buffer(`${this.config.key}:${this.config.secret}`).toString("base64");
+      `Basic ` + Buffer.from(`${this.config.key}:${this.config.secret}`).toString("base64");
   }
 
   public request<D extends any>(
-    req: SimpleRpnRequestConfig
+    req: SimpleRpnRequestConfig,
+    _log?: SimpleLoggerInterface
   ): Promise<SimpleHttpClientResponseInterface<D>> {
+    const log = _log || this.log;
     if (this.config.envType === "dev") {
       req.rejectUnauthorized = false;
     }
@@ -73,9 +75,9 @@ export class ApiClient implements SimpleHttpClientInterface {
       req.headers["Content-Type"] = "application/json";
     }
 
-    this.log.info(`Making API call to ${req.method} ${req.baseURL}${req.url}`);
-    this.log.debug(`Full request options:\n${JSON.stringify(req, null, 2)}`);
+    log.info(`Making API call to ${req.method} ${req.baseURL}${req.url}`);
+    log.debug(`Full request options:\n${JSON.stringify(req, null, 2)}`);
 
-    return this.rpn.request<D>(req);
+    return this.rpn.request<D>(req, log);
   }
 }

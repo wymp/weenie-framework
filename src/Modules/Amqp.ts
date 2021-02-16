@@ -1,4 +1,4 @@
-import { SimpleLoggerInterface, SimplePubSubInterface } from "ts-simple-interfaces";
+import { SimpleLoggerInterface, SimplePubSubInterface } from "@wymp/ts-simple-interfaces";
 import {
   SimpleAmqpConfig,
   AbstractPubSubAmqp,
@@ -6,7 +6,7 @@ import {
   SubscriptionOptions,
   PublishOptions,
   SimpleAmqpMessage,
-} from "simple-pubsub-amqp";
+} from "@wymp/simple-pubsub-amqp";
 
 export const amqp = (r: {
   config: { amqp: SimpleAmqpConfig };
