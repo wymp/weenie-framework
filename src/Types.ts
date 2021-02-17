@@ -35,14 +35,14 @@ export type ApiConfig = rt.Static<typeof apiConfigValidator>;
  * This is mostly just a runtime validation of AMQP configs
  */
 export const mqConnectionConfigValidator = rt.Record({
-  protocol: rt.Literal("amqp"),
-  hostname: rt.String,
-  port: rt.Number,
-  username: rt.String,
-  password: rt.String,
-  locale: rt.String,
-  vhost: rt.String,
-  heartbeat: rt.Number,
+  protocol: optional(rt.Literal("amqp")),
+  hostname: optional(rt.String),
+  port: optional(rt.Number),
+  username: optional(rt.String),
+  password: optional(rt.String),
+  locale: optional(rt.String),
+  vhost: optional(rt.String),
+  heartbeat: optional(rt.Number),
 });
 export type MqConnectionConfig = rt.Static<typeof mqConnectionConfigValidator>;
 
