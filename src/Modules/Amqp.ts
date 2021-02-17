@@ -32,12 +32,37 @@ export class WeeniePubSubAmqp extends AbstractPubSubAmqp
   ): Promise<void> {
     return this.driver.subscribe(
       routes,
-      (msg: SimpleAmqpMessage, log: SimpleLoggerInterface) => {
-        const m = Object.assign(
-          { id: msg.extra.messageId, timestamp: msg.extra.timestamp },
-          JSON.parse(msg.content.toString("utf8"))
-        );
-        return handler(m, log);
+      async (_msg: SimpleAmqpMessage, log: SimpleLoggerInterface) => {
+        let msg: any;
+        try {
+          msg = JSON.parse(_msg.content.toString("utf8"));
+          if (msg === null || typeof msg !== "object") {
+            throw new Error(
+              `Message must be a non-null JSON object. Your message is ${
+                msg === null ? "null" : `a(n) ${typeof msg}`
+              }`
+            );
+          }
+        } catch (e) {
+          log.error(
+            `Message body is not valid JSON: Message body: ${_msg.content.toString("utf8")}; ` +
+              `Error: ${e.stack}`
+          );
+          // Have to return true here since this message will never parse correctly
+          return true;
+        }
+
+        try {
+          const m = {
+            id: _msg.extra.messageId,
+            timestamp: _msg.extra.timestamp,
+            ...msg,
+          };
+          return await handler(m, log);
+        } catch (e) {
+          log.error(`Error executing handler: ${e.stack}`);
+          return false;
+        }
       },
       options
     );
