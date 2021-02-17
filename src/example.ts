@@ -13,8 +13,7 @@ import {
   // Base framework function
   Weenie,
 
-  // Config stuff (all of these actually come from the `@wymp/weenie-base` package and are "standard"
-  // approaches to configuring these services)
+  // Config component and runtime config validators
   configFromFiles,
   baseConfigValidator,
   databaseConfigValidator,
@@ -22,7 +21,7 @@ import {
   apiConfigValidator,
   mqConnectionConfigValidator,
 
-  // Functions that hang things on the tree
+  // Other components
   logger,
   serviceManagement,
   mysql,
@@ -51,8 +50,8 @@ import {
 /**
  * Create final config definition
  *
- * Here, we're using the "base" config from @wymp/weenie-base (which includes things like config for
- * an exponential backoff system, an initialization system, a logger, and environment awareness)
+ * Here, we're using the "base" config defined in `src/Types.ts` (which includes things like config
+ * for an exponential backoff system, an initialization system, a logger, and environment awareness)
  * and we're adding config for a database, webservice provider, and two arbitrary API clients.
  *
  * This config contains all of the keys necessary to instantiate the rest of our dependencies, and
@@ -81,8 +80,8 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
    * typed.
    *
    * Note that in this example we have one promisified dependency, which we resolve in the `done`
-   * method down below. Because of that, we're awaiting here, but we could just as easily create
-   * non-promisified dependendencies and not have to wait.
+   * method down below. Because of that, we're awaiting here, but if by chance we don't have any
+   * promisified dependencies, then of course we don't have to make this async.
    */
 
   /**
@@ -113,7 +112,7 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
      */
     .and(() => {
       return {
-        myPromise: new Promise<void>((res, rej) => setTimeout(() => res(), 2000)),
+        myPromise: new Promise<string>((res, rej) => setTimeout(() => res("resolved!"), 2000)),
       };
     })
 
@@ -213,7 +212,7 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
       // We know we've got some promises to wait for, so let's wait for them before wrapping everything
       // up
 
-      await d.myPromise;
+      const myPromise = await d.myPromise;
 
       // This comes from the serviceManagement function up above
       d.svc.initialized(true);
@@ -225,6 +224,7 @@ declare type ExampleConfig = rt.Static<typeof exampleConfigValidator>;
         io: d.io,
         http: d.http,
         pubsub: d.pubsub,
+        myPromise,
       };
     });
 

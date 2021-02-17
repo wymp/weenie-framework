@@ -11,7 +11,7 @@
     "username": "dev",
     "password": "dev",
     "locale": "en_US",
-    "vhost": "dev",
+    "vhost": "",
     "heartbeat": 120
   },
   "db": {
