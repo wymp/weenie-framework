@@ -16,7 +16,7 @@ import * as rt from "runtypes";
 const Port = rt.Number;
 const Host = rt.String;
 export const webServiceConfigValidator = rt.Record({
-  listeners: rt.Array(rt.Tuple(Port, optional(Host))),
+  listeners: rt.Array(rt.Tuple(Port, rt.Optional(Host))),
 });
 export type WebServiceConfig = rt.Static<typeof webServiceConfigValidator>;
 
@@ -35,28 +35,38 @@ export type ApiConfig = rt.Static<typeof apiConfigValidator>;
  * This is mostly just a runtime validation of AMQP configs
  */
 export const mqConnectionConfigValidator = rt.Record({
-  protocol: optional(rt.Literal("amqp")),
-  hostname: optional(rt.String),
-  port: optional(rt.Number),
-  username: optional(rt.String),
-  password: optional(rt.String),
-  locale: optional(rt.String),
-  vhost: optional(rt.String),
-  heartbeat: optional(rt.Number),
+  protocol: rt.Optional(rt.Literal("amqp")),
+  hostname: rt.Optional(rt.String),
+  port: rt.Optional(rt.Number),
+  username: rt.Optional(rt.String),
+  password: rt.Optional(rt.String),
+  locale: rt.Optional(rt.String),
+  vhost: rt.Optional(rt.String),
+  heartbeat: rt.Optional(rt.Number),
 });
 export type MqConnectionConfig = rt.Static<typeof mqConnectionConfigValidator>;
 
 /**
  * Mostly just a runtime validation of MySQL configs
  */
-export const databaseConfigValidator = rt.Record({
-  host: rt.Union(rt.String, rt.Undefined, rt.Null),
-  port: rt.Union(rt.Number, rt.Undefined, rt.Null),
-  socketPath: rt.Union(rt.String, rt.Undefined, rt.Null),
-  user: rt.String,
-  password: rt.String,
-  database: rt.String,
-});
+export const databaseConfigValidator = rt.Union(
+  rt.Record({
+    host: rt.Union(rt.String, rt.Undefined, rt.Null),
+    port: rt.Union(rt.Number, rt.Undefined, rt.Null),
+    socketPath: rt.Optional(rt.Union(rt.Undefined, rt.Null)),
+    user: rt.String,
+    password: rt.String,
+    database: rt.String,
+  }),
+  rt.Record({
+    host: rt.Optional(rt.Union(rt.Undefined, rt.Null)),
+    port: rt.Optional(rt.Union(rt.Undefined, rt.Null)),
+    socketPath: rt.String,
+    user: rt.String,
+    password: rt.String,
+    database: rt.String,
+  })
+);
 export type DatabaseConfig = rt.Static<typeof databaseConfigValidator>;
 
 /**
@@ -74,7 +84,7 @@ export const loggerConfigValidator = rt.Record({
     .Or(rt.Literal("emergency")),
 
   // If this is null, then logs are only written to stdout
-  logFilePath: rt.String.Or(rt.Null),
+  logFilePath: rt.Optional(rt.String.Or(rt.Null)),
 });
 export type LoggerConfig = rt.Static<typeof loggerConfigValidator>;
 
@@ -100,10 +110,10 @@ export const jobManagerConfigValidator = rt.Record({
    * This is intended to be used by an exponential backoff system, where the system takes this
    * parameter and doubles it on each failed attempt.
    */
-  initialJobWaitMs: optional(rt.Number),
+  initialJobWaitMs: rt.Optional(rt.Number),
 
   /** Maximum time to wait in ms before the application should stop retrying a failed job */
-  maxJobWaitMs: optional(rt.Number),
+  maxJobWaitMs: rt.Optional(rt.Number),
 });
 export type JobManagerConfig = rt.Static<typeof jobManagerConfigValidator>;
 
@@ -136,14 +146,3 @@ export const baseConfigValidator = rt.Intersect(
   })
 );
 export type BaseConfig = rt.Static<typeof baseConfigValidator>;
-
-/**
- * MISCELLANEOUS
- *
- * Miscellaneous utilities to make our code cleaner
- */
-
-// Make arguments optional
-function optional<T extends rt.Runtype>(t: T) {
-  return rt.Union(t, rt.Undefined);
-}
