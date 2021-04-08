@@ -17,6 +17,8 @@ const Port = rt.Number;
 const Host = rt.String;
 export const webServiceConfigValidator = rt.Record({
   listeners: rt.Array(rt.Tuple(Port, rt.Optional(Host))),
+  handleErrors: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
+  handleFallthrough: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
 });
 export type WebServiceConfig = rt.Static<typeof webServiceConfigValidator>;
 
