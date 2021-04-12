@@ -17,8 +17,13 @@ const Port = rt.Number;
 const Host = rt.String;
 export const webServiceConfigValidator = rt.Record({
   listeners: rt.Array(rt.Tuple(Port, rt.Optional(Host))),
+  logIncoming: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
+  parseJson: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
+  jsonMimeTypes: rt.Optional(rt.Union(rt.Null, rt.Array(rt.String))),
   handleErrors: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
   handleFallthrough: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
+  listenOnReady: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
+  mask500Errors: rt.Optional(rt.Union(rt.Null, rt.Boolean, rt.String)),
 });
 export type WebServiceConfig = rt.Static<typeof webServiceConfigValidator>;
 

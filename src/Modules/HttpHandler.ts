@@ -17,23 +17,55 @@ export function httpHandler(d: {
   const config = getWithFallback<WebServiceConfig>(d.config, "http", "webservice");
   const http = new SimpleHttpServerExpress({ listeners: config.listeners }, d.logger);
 
+  // Get final options (null means "use default")
+  const opts = {
+    logIncoming: config.logIncoming ?? true,
+    parseJson: config.parseJson ?? true,
+    jsonMimeTypes: config.jsonMimeTypes ?? ["application/json", "application/json-rpc"],
+    handleErrors: config.handleErrors ?? true,
+    handleFallthrough: config.handleFallthrough ?? true,
+    listenOnReady: config.listenOnReady ?? true,
+    mask500Errors: config.mask500Errors ?? true,
+  };
+
   // Log every incoming request
-  http.use((req, res, next) => {
-    const log = logger(d.logger, req, res);
-    log.info(`Request received`);
-    next();
-  });
+  if (opts.logIncoming) {
+    http.use((req, res, next) => {
+      const log = logger(d.logger, req, res);
+      log.info(`Request received`);
+      next();
+    });
+  }
 
   // Parse incoming bodies (JSON only)
-  http.use(Parsers.json({ type: ["application/json", "application/json-rpc"] }));
+  if (opts.parseJson) {
+    http.use(Parsers.json({ type: opts.jsonMimeTypes }));
+  }
+
+  // If we've explicitly requested the next features and we can't offer them, we need to throw an
+  // error
+  if (
+    !d.svc &&
+    (config.handleErrors === true ||
+      config.handleFallthrough === true ||
+      config.listenOnReady === true)
+  ) {
+    throw new E.InternalServerError(
+      `You've requested error handling, fallthrough handling, or 'listen-on-ready', but you ` +
+        `haven't provided a service manager that would enable this functionality. Please either ` +
+        `change your config or add 'Weenie.serviceManager' to your dependencies to facilitate ` +
+        `this. If you add 'Weenie.serviceManager', please note that you must call ` +
+        `'svc.initialized(true)' when your service is fully connected.`
+    );
+  }
 
   // If svc manager available, add auto-listening on initialization
   let tcpListeners: Array<{ close(): unknown }> = [];
-  if (d.svc && (config.handleErrors !== false || config.handleFallthrough !== false)) {
+  if (d.svc && (opts.handleErrors || opts.handleFallthrough || opts.listenOnReady)) {
     const ready = getWithFallback<Promise<void>>(d.svc, "ready", "initTimeout");
     ready.then(() => {
       // Add fallthrough handling, if requested
-      if (config.handleFallthrough !== false) {
+      if (opts.handleFallthrough) {
         http.use((req, res, next) => {
           const log = logger(d.logger, req, res);
           log.notice(`Request not fulfilled. Returning 400 error.`);
@@ -48,12 +80,15 @@ export function httpHandler(d: {
       }
 
       // Add standard error handling, if requested
-      if (config.handleErrors !== false) {
-        http.catch(StandardErrorHandler(d.logger));
+      if (opts.handleErrors) {
+        d.logger.debug(`Registering standard error handler`);
+        http.catch(StandardErrorHandler(d.logger, opts));
       }
 
       // Start listening, saving the returned listeners
-      tcpListeners = http.listen();
+      if (opts.listenOnReady) {
+        tcpListeners = http.listen();
+      }
     });
   }
 
@@ -66,7 +101,10 @@ export function httpHandler(d: {
 
 const getWithFallback = <T>(d: any, k1: string, k2: string): T => d[k1] || d[k2];
 
-export const StandardErrorHandler = (_log: SimpleLoggerInterface): SimpleHttpServerErrorHandler => {
+export const StandardErrorHandler = (
+  _log: SimpleLoggerInterface,
+  opts: { mask500Errors: boolean | string }
+): SimpleHttpServerErrorHandler => {
   return (e, req, res, next) => {
     const log = logger(_log, req, res);
 
@@ -79,13 +117,19 @@ export const StandardErrorHandler = (_log: SimpleLoggerInterface): SimpleHttpSer
       e.stack = stack;
     }
 
+    // Mask 500 errors, if requested
+    const msg =
+      opts.mask500Errors && e.status >= 500
+        ? typeof opts.mask500Errors === "string"
+          ? opts.mask500Errors
+          : `Sorry, something went wrong on our end :(. Please try again.`
+        : e.message;
+
     const level = <keyof SimpleLogLevels>(e.loglevel ? e.loglevel : "error");
     log[level](
       `Exception thrown: ${e.name} (${e.status}: ` +
         `'${e.subcode! || e.code!}') ${e.message}` +
-        e.obstructions?.length
-        ? ` Obstructions:\n${JSON.stringify(e.obstructions, null, 2)}`
-        : ""
+        (e.obstructions?.length ? ` Obstructions:\n${JSON.stringify(e.obstructions, null, 2)}` : "")
     );
     log[level]("Stack trace: " + e.stack);
 
@@ -118,7 +162,7 @@ export const StandardErrorHandler = (_log: SimpleLoggerInterface): SimpleHttpSer
           id: res.locals.jsonrpcRequestId || null,
           error: {
             code: e.status ? e.status : e.code && typeof e.code === "number" ? e.code! : 500,
-            message: e.message,
+            message: msg,
             data: {
               obstructions: e.obstructions,
             },
@@ -135,7 +179,7 @@ export const StandardErrorHandler = (_log: SimpleLoggerInterface): SimpleHttpSer
           status: e.status,
           code: e.subcode! || e.code!,
           title: e.name,
-          detail: e.message,
+          detail: msg,
           obstructions: e.obstructions || [],
         },
       };
