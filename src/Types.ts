@@ -24,6 +24,7 @@ export const webServiceConfigValidator = rt.Record({
   handleFallthrough: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
   listenOnReady: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
   mask500Errors: rt.Optional(rt.Union(rt.Null, rt.Boolean, rt.String)),
+  errOnBlankPost: rt.Optional(rt.Union(rt.Null, rt.Boolean)),
 });
 export type WebServiceConfig = rt.Static<typeof webServiceConfigValidator>;
 

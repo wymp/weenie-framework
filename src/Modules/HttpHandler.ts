@@ -26,6 +26,7 @@ export function httpHandler(d: {
     handleFallthrough: config.handleFallthrough ?? true,
     listenOnReady: config.listenOnReady ?? true,
     mask500Errors: config.mask500Errors ?? true,
+    errOnBlankPost: config.errOnBlankPost ?? true,
   };
 
   // Log every incoming request
@@ -40,6 +41,26 @@ export function httpHandler(d: {
   // Parse incoming bodies (JSON only)
   if (opts.parseJson) {
     http.use(Parsers.json({ type: opts.jsonMimeTypes }));
+  }
+
+  // If it's a post or a patch and the body isn't set, make sure the user passed the right
+  // content-type header
+  if (opts.errOnBlankPost) {
+    http.use((req, res, next) => {
+      if (
+        ["post", "patch"].includes(req.method.toLowerCase()) &&
+        Object.keys(req.body).length === 0
+      ) {
+        next(
+          new E.BadRequest(
+            "The body of your request is blank or does not appear to have been parsed correctly. " +
+              "Please be sure to pass a content-type header specifying the content type of your body."
+          )
+        );
+      } else {
+        next();
+      }
+    });
   }
 
   // If we've explicitly requested the next features and we can't offer them, we need to throw an
