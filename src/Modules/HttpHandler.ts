@@ -1,4 +1,4 @@
-import * as E from "@openfinanceio/http-errors";
+import * as E from "@wymp/http-errors";
 import { logger } from "@wymp/http-utils";
 import {
   SimpleLoggerInterface,
@@ -86,17 +86,31 @@ export function httpHandler(d: {
     const ready = getWithFallback<Promise<void>>(d.svc, "ready", "initTimeout");
     ready.then(() => {
       // Add fallthrough handling, if requested
+      // Note that we support a "response" object. This allows us to foster the habit of passing
+      // responses down through optional filters and handlers after the main handler.
       if (opts.handleFallthrough) {
         http.use((req, res, next) => {
-          const log = logger(d.logger, req, res);
-          log.notice(`Request not fulfilled. Returning 400 error.`);
-          next(
-            new E.BadRequest(
-              `Endpoint '${req.method} ${req.path}' does not exist on this server. Please read the ` +
-                `docs and try again.`,
-              `ENDPOINT-NOT-FOUND.${req.method}:${req.path}`
-            )
-          );
+          // If we've set a "response" object in the locals, use it
+          if (res.locals.response) {
+            const r = res.locals.response;
+            if (r.headers) {
+              for (const h in r.headers) {
+                res.set(h, r.headers[h]);
+              }
+            }
+            res.status(r.status || 200).send(r.body);
+          } else {
+            // Otherwise, it's an error
+            const log = logger(d.logger, req, res);
+            log.notice(`Request not fulfilled. Returning 400 error.`);
+            next(
+              new E.BadRequest(
+                `Endpoint '${req.method} ${req.path}' does not exist on this server. Please read the ` +
+                  `docs and try again.`,
+                `ENDPOINT-NOT-FOUND.${req.method}:${req.path}`
+              )
+            );
+          }
         });
       }
 
